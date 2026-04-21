@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Vygotsky: Avaliação de Aprendizado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Crimson+Pro:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .serif { font-family: 'Crimson Pro', serif; }
+        .progress-bar { transition: width 0.4s ease; }
+        input[type="radio"]:checked + label {
+            border-color: #047857;
+            background-color: #f0fdf4;
+            color: #047857;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center p-4">
+
+    <!-- Main Card -->
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden mt-8 mb-8 border border-slate-100">
+        
+        <!-- Progress Header -->
+        <div class="bg-slate-900 p-6 text-white text-center">
+            <h1 class="serif text-2xl mb-1">Avaliação: Lev Vygotsky</h1>
+            <p class="text-slate-400 text-xs uppercase tracking-widest">Teoria Sócio-Histórica</p>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-4 overflow-hidden">
+                <div id="progress" class="progress-bar bg-emerald-500 h-full" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Form Start -->
+        <form id="quizForm" action="https://formsubmit.co/reboucasmateus9@gmail.com" method="POST">
+            <!-- FormSubmit Configuration -->
+            <input type="hidden" name="_subject" value="Nova Resposta: Quiz Vygotsky">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_next" value="https://seugithub.io/suapagina/obrigado.html"> <!-- Opcional: página de agradecimento -->
+            <input type="hidden" name="_captcha" value="false">
+
+            <!-- Step 1: User Info -->
+            <div id="step-info" class="p-8 space-y-6">
+                <div class="text-center">
+                    <i class="fa-solid fa-user-graduate text-4xl text-emerald-600 mb-4"></i>
+                    <h2 class="text-xl font-bold text-slate-800">Identificação</h2>
+                    <p class="text-slate-500 text-sm">Antes de começar, preencha seus dados:</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">Nome Completo</label>
+                    <input type="text" name="nome" required placeholder="Seu nome" class="w-full p-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">E-mail</label>
+                    <input type="email" name="email" required placeholder="seu@email.com" class="w-full p-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none">
+                </div>
+                <button type="button" onclick="startQuiz()" class="w-full bg-emerald-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all">
+                    INICIAR QUESTÕES
+                </button>
+            </div>
+
+            <!-- Quiz Steps (Container for JS) -->
+            <div id="quiz-content" class="hidden p-8">
+                <!-- Questions will be injected here -->
+            </div>
+
+            <!-- Final Step: Results -->
+            <div id="step-result" class="hidden p-8 text-center space-y-6">
+                <div id="score-circle" class="w-24 h-24 rounded-full border-4 border-emerald-500 flex items-center justify-center mx-auto mb-4">
+                    <span id="final-score" class="text-3xl font-bold text-emerald-600">0</span>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800">Avaliação Concluída!</h2>
+                <p id="tri-feedback" class="text-slate-600 text-sm leading-relaxed"></p>
+                
+                <!-- Hidden inputs to send score to email -->
+                <input type="hidden" name="nota_tri" id="hiddenScore">
+                <input type="hidden" name="respostas_resumo" id="hiddenResumo">
+
+                <button type="submit" class="w-full bg-slate-900 text-white font-bold py-4 rounded-xl shadow-xl hover:bg-black transition-all">
+                    ENVIAR PARA O PROFESSOR
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Quiz Data with TRI Levels: 1 (Easy), 2 (Medium), 3 (Hard)
+        const questions = [
+            {
+                q: "Qual era a missão principal de Vygotsky na Rússia pós-1917?",
+                options: ["Manter a psicologia baseada apenas em instintos animais.", "Construir uma ciência baseada no materialismo dialético para o 'Novo Homem'.", "Seguir os passos da psicanálise freudiana."],
+                correct: 1,
+                level: 1
+            },
+            {
+                q: "As Funções Psicológicas Elementares (FPE) são caracterizadas por:",
+                options: ["Origem cultural e controle voluntário.", "Origem biológica, reflexos e atenção involuntária.", "Aprendizado sistemático na escola."],
+                correct: 1,
+                level: 1
+            },
+            {
+                q: "O que define as Funções Psicológicas Superiores (FPS)?",
+                options: ["São exclusivas dos seres humanos e mediadas por signos.", "São reações automáticas comuns aos animais superiores.", "São determinadas puramente pela herança genética."],
+                correct: 0,
+                level: 1
+            },
+            {
+                q: "O processo onde o social se torna individual é chamado de:",
+                options: ["Extroversão.", "Internalização (ou Interiorização).", "Maturação Orgânica."],
+                correct: 1,
+                level: 1
+            },
+            {
+                q: "Na mediação vygotskyana, qual é a função específica do Signo?",
+                options: ["Modificar o ambiente externo (físico).", "Atuar como instrumento psicológico que regula o comportamento interno.", "Substituir a necessidade de professores."],
+                correct: 1,
+                level: 2
+            },
+            {
+                q: "De acordo com Seth Chaiklin, qual o erro mais comum ao interpretar a ZDP?",
+                options: ["Achar que ela serve apenas para auxílio em tarefas mecânicas isoladas.", "Dizer que a criança aprende com ajuda.", "Acreditar que o professor é um mediador."],
+                correct: 0,
+                level: 2
+            },
+            {
+                q: "O que diferencia a ZDP Objetiva da Subjetiva na visão de Chaiklin?",
+                options: ["A Objetiva é biológica e a Subjetiva é cultural.", "A Objetiva é normativa do período etário; a Subjetiva é o estado de maturação da criança singular.", "Não há diferença entre elas."],
+                correct: 1,
+                level: 3
+            },
+            {
+                q: "Por que Vygotsky afirma que a imitação é um ato de inteligência?",
+                options: ["Porque a criança copia sem pensar.", "Porque ela só imita aquilo que compreende estruturalmente dentro de suas possibilidades intelectuais.", "Porque imitar é um instinto animal superior."],
+                correct: 1,
+                level: 2
+            },
+            {
+                q: "No brinquedo de faz-de-conta, como a criança age?",
+                options: ["Apenas por impulso visual do objeto real.", "Orientada pelo significado (ideia) e por regras sociais da situação imaginária.", "Sem qualquer regra ou estrutura lógica."],
+                correct: 1,
+                level: 2
+            },
+            {
+                q: "Qual a diferença entre conceitos Espontâneos e Científicos?",
+                options: ["Espontâneos são sistemáticos; Científicos são fragmentados.", "Científicos são mediadores conscientes e sistemáticos adquiridos na escola.", "Ambos são adquiridos naturalmente sem ajuda da escola."],
+                correct: 1,
+                level: 2
+            },
+            {
+                q: "Segundo Rosa & Goi, a interação entre pares (colegas) em sala de aula:",
+                options: ["Atrapalha o desenvolvimento individual do aluno.", "Cria ZDPs coletivas e auxilia na apropriação do signo científico.", "Deve ser evitada para manter o silêncio."],
+                correct: 1,
+                level: 3
+            },
+            {
+                q: "O ensino de física, quando utiliza mediação de signos, permite que o aluno:",
+                options: ["Decore fórmulas para a prova sem entender.", "Transforme percepções cotidianas em pensamento teórico/abstrato.", "Esqueça o conhecimento prévio que trazia de casa."],
+                correct: 1,
+                level: 3
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function startQuiz() {
+            const name = document.querySelector('input[name="nome"]').value;
+            const email = document.querySelector('input[name="email"]').value;
+            if(!name || !email) return;
+
+            document.getElementById('step-info').classList.add('hidden');
+            document.getElementById('quiz-content').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progress').style.width = progress + '%';
+
+            let html = `
+                <div class="animate-in fade-in slide-in-from-right-4 duration-500">
+                    <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">QUESTÃO ${currentQuestion + 1} DE ${questions.length}</span>
+                    <h3 class="text-lg font-bold text-slate-800 mt-3 mb-6 leading-tight">${q.q}</h3>
+                    <div class="space-y-3">
+            `;
+
+            q.options.forEach((opt, idx) => {
+                html += `
+                    <div class="relative">
+                        <input type="radio" name="q${currentQuestion}" id="opt${idx}" value="${idx}" class="hidden" onchange="nextQuestion(${idx})">
+                        <label for="opt${idx}" class="flex items-center p-4 border-2 border-slate-100 rounded-xl cursor-pointer hover:border-slate-300 transition-all text-sm font-medium">
+                            ${opt}
+                        </label>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            document.getElementById('quiz-content').innerHTML = html;
+        }
+
+        function nextQuestion(selectedIdx) {
+            answers.push({
+                level: questions[currentQuestion].level,
+                correct: selectedIdx === questions[currentQuestion].correct
+            });
+
+            // Small delay for feedback visual before skip
+            setTimeout(() => {
+                currentQuestion++;
+                if(currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    calculateTRI();
+                }
+            }, 300);
+        }
+
+        function calculateTRI() {
+            document.getElementById('quiz-content').classList.add('hidden');
+            document.getElementById('step-result').classList.remove('hidden');
+            document.getElementById('progress').style.width = '100%';
+
+            // TRI Logic simplified: Weighted points + Consistency check
+            // Level 1: 5 points | Level 2: 10 points | Level 3: 20 points
+            let totalScore = 0;
+            let easyHits = 0;
+            let hardHits = 0;
+
+            answers.forEach(ans => {
+                if(ans.correct) {
+                    if(ans.level === 1) { totalScore += 5; easyHits++; }
+                    if(ans.level === 2) totalScore += 10;
+                    if(ans.level === 3) { totalScore += 20; hardHits++; }
+                }
+            });
+
+            // Consistency Penalty: If you hit hard but miss easy, score is reduced (anti-chute)
+            if(hardHits > 0 && easyHits < 2) {
+                totalScore = Math.round(totalScore * 0.7);
+            }
+
+            // Map score to 0-10
+            const finalGrade = Math.min(10, (totalScore / 130) * 10).toFixed(1);
+            
+            document.getElementById('final-score').innerText = finalGrade;
+            document.getElementById('hiddenScore').value = finalGrade;
+            document.getElementById('hiddenResumo').value = JSON.stringify(answers);
+
+            let feedback = "";
+            if(finalGrade >= 8) feedback = "Excelente! Você domina os conceitos sistêmicos e críticos da teoria.";
+            else if(finalGrade >= 5) feedback = "Bom desempenho. Você compreende a base, mas pode aprofundar nas críticas de Chaiklin.";
+            else feedback = "Atenção: Revise os conceitos de mediação e o papel dos signos no desenvolvimento.";
+
+            document.getElementById('tri-feedback').innerText = feedback;
+        }
+
+        function togglePresentMode() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+                document.body.classList.add('presenting');
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                    document.body.classList.remove('presenting');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
